@@ -9,5 +9,15 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "name": "server",
+  "description": "server app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "",
+  "license": "ISC"
 }
