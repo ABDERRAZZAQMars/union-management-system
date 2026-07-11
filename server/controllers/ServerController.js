@@ -1,10 +1,13 @@
 const asyncHandler = require('express-async-handler');
 
+const Server = require('../models/ServerModel');
+
 // method : GET
 // url : /
 // access : Private
 const getServer = asyncHandler(async (req, res) => {
-    res.status(200).json({ message: "Welcome to UNION MANAGEMENT SYSTEM" });
+    const server = await Server.find();
+    res.status(200).json(server);
 });
 
 // method : POST
@@ -15,7 +18,10 @@ const setServer = asyncHandler(async (req, res) => {
         res.status(400).json({ message: "Please add a text field" });
         throw new Error("Please add a text field");
     } else {
-        res.status(200).json({ message: `SET to UNION MANAGEMENT SYSTEM ${req.body.text}` });
+        const server = await Server.create({
+        text: req.body.text
+    });
+    res.status(200).json(server);
     }
 });
 
@@ -23,24 +29,27 @@ const setServer = asyncHandler(async (req, res) => {
 // url : /:id
 // access : Private
 const updateServer = asyncHandler(async (req, res) => {
-    if (!req.body.text) {
+    const server = await Server.findById(req.params._id);
+    if (!server) {
         res.status(400);
-        throw new Error("Please add a text field");
-    } else {
-        res.status(200).json({ message: `UPDATE to UNION MANAGEMENT SYSTEM ${req.params._id}` });
+        throw new Error("Server not found");
     }
+    const updatedServer = await Server.findByIdAndUpdate(req.params._id, req.body, { new: true });
+    res.status(200).json(updatedServer);
 });
 
 // method : DELETE
 // url : /:id
 // access : Private
 const deleteServer = asyncHandler(async (req, res) => {
-    if (!req.body.text) {
+    const server = await Server.findById(req.params._id);
+    if (!server) {
         res.status(400);
-        throw new Error("Please add a text field");
-    } else {
-        res.status(200).json({ message: `DELETE from UNION MANAGEMENT SYSTEM ${req.params._id}` });
+        throw new Error("Server not found");
+        console.log(server);
     }
+    await Server.findByIdAndDelete(req.params._id);
+    res.status(200).json({ id: req.params._id });
 });
 
 module.exports = {
