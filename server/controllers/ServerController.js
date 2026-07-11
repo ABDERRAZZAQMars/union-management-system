@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler');
 
 const Server = require('../models/ServerModel');
+const User = require('../models/UserModel');
 
 // method : GET
 // url : /
 // access : Private
 const getServer = asyncHandler(async (req, res) => {
-    const server = await Server.find();
+    const server = await Server.find({ user: req.user.id });
     res.status(200).json(server);
 });
 
@@ -19,7 +20,8 @@ const setServer = asyncHandler(async (req, res) => {
         throw new Error("Please add a text field");
     } else {
         const server = await Server.create({
-        text: req.body.text
+        text: req.body.text,
+        user: req.user.id
     });
     res.status(200).json(server);
     }
@@ -34,6 +36,19 @@ const updateServer = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Server not found");
     }
+
+    // Check for user
+    if (!req.user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    // Make sure the logged in user matches the server user
+    if (server.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
+    }
+
     const updatedServer = await Server.findByIdAndUpdate(req.params._id, req.body, { new: true });
     res.status(200).json(updatedServer);
 });
@@ -48,6 +63,19 @@ const deleteServer = asyncHandler(async (req, res) => {
         throw new Error("Server not found");
         console.log(server);
     }
+
+    // Check for user
+    if (!req.user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    // Make sure the logged in user matches the server user
+    if (server.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
+    }
+
     await Server.findByIdAndDelete(req.params._id);
     res.status(200).json({ id: req.params._id });
 });
