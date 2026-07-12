@@ -97,10 +97,67 @@ const generateToken = (id) => {
     });
 };
 
+// method : POST
+// url : /user/users
+// access : Private
+
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find().select('-password');
+    res.status(200).json(users);
+});
+
+// method : DELETE
+// url : /user/:id
+// access : Private
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ id: req.params.id, message: "User deleted successfully" });
+});
+
+// GET single user by id
+const getUserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+    res.status(200).json(user);
+});
+
+// UPDATE user
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    const updateData = { ...req.body };
+
+    if (!updateData.password) {
+        delete updateData.password;
+    } else {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(updateData.password, salt);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password');
+    res.status(200).json(updatedUser);
+});
+
 module.exports = {
     registerUser,
     loginUser,
     getUserData,
-    generateToken
+    getUsers,
+    deleteUser,
+    updateUser,
+    getUserById,
+    generateToken,
+    
 }
-
