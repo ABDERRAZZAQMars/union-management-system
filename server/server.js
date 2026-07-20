@@ -22,12 +22,10 @@ app.use('/user', require('./routes/UserRoute'));
 //Error_Handler
 app.use(errorHandler);
 
-app.listen(port, (err) => {
-if (!err) {
-console.log(`Server started on port ${port}`)
-} else { console.log(err)}
-});
 
+if (require.main === module) {
+    app.listen(port, (err) => { if (!err) { console.log(`Server started on port ${port}`) } else { console.log(err) }});
+}
 
 
 module.exports = app

@@ -54,9 +54,7 @@ function LoginPage() {
             <p className="text-2xl mb-6 font-bold">Connexion</p>
             <form onSubmit={handleSubmit}>
               <div>
-                <label className="label text-xs font-medium">
-                  Adresse email - Format: exemple@mail.com
-                </label>
+                <label htmlFor="email" className="label text-xs font-medium"> Adresse email - Format: exemple@mail.com</label>
                 <Input
                   value={data.email}
                   onChange={handleChange}
@@ -66,9 +64,7 @@ function LoginPage() {
                 />
               </div>
               <div>
-                <label className="label text-xs font-medium">
-                  Mot de passe
-                </label>
+               <label htmlFor="password" className="label text-xs font-medium">Mot de passe</label>
                 <Input
                   value={data.password}
                   onChange={handleChange}
